@@ -1,5 +1,4 @@
 import express from 'express';
-import bodyParser from 'body-parser';
 import fileUpload from 'express-fileupload';
 import { PORT, APP_ENV } from './config/config.js';
 import database from './config/database.js'; // Database Connection
@@ -22,8 +21,6 @@ const app = express();
 ****************/
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
 
 app.use(fileUpload());
 
