@@ -1,6 +1,6 @@
-# Gamlewala - Backend
+# Dropship - Backend
 
-Gamlewala is a Backend Application built using Node.js, Express,Mongodb, and other modern web technologies.
+Dropship is a Backend Application built using Node.js, Express,Mongodb, and other modern web technologies.
 
 ## Table of Contents
 
@@ -12,7 +12,7 @@ Gamlewala is a Backend Application built using Node.js, Express,Mongodb, and oth
 
 ## Getting Started
 
-To get started with Gamlewala, follow the instructions below.
+To get started with Dropship, follow the instructions below.
 
 ### Prerequisites
 
@@ -30,13 +30,13 @@ Before running the project, ensure you have the following installed:
  
 
    ```bash
-   git clone git@github.com:softfi/gamlewala.git
+   git clone git@github.com:ZyX-N/Dropship-Backend.git
 
    ```
   **Cloning with HTTPS:**
 
  ```bash
-  git clone https://github.com/softfi/gamlewala.git
+  git clone https://github.com/ZyX-N/Dropship-Backend.git
 
    ```
 
@@ -44,15 +44,10 @@ Before running the project, ensure you have the following installed:
 2. **Navigate to the project directory:**
 
    ```bash
-   cd gamlewala
+   cd dropship-backend
 
    ```
 
-3. **Install dependencies using Yarn:**
-
-   ```bash
-   yarn
-   ```
 
 ### .env File Setup
 
@@ -61,8 +56,13 @@ Before running the project, ensure you have the following installed:
 ### running-the-project
 
 ```bash
-'yarn dev'
+'npm start'
 
 ```
 
-This updated README provides a brief overview of Gamlewala as an e-commerce Bckend app and includes instructions for getting started,Feel free to customize it further based on your project's unique characteristics.
+This updated README provides a brief overview of Dropship as an e-commerce Bckend app and includes instructions for getting started,Feel free to customize it further based on your project's unique characteristics.
+
+
+### API Docs
+
+- [Word doc](https://docs.google.com/document/d/1ryrS_HdC7fFK234keYlo8DmVxk2TeycXxU1eAtaLQWo/edit?usp=sharing)
