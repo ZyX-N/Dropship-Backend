@@ -1,7 +1,8 @@
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET_TOKEN } from '../../config/config.js';
 // import { errorLog } from '../../config/logger.js';
-import { authValues, sendErrorResponse, sendResponseWithoutData } from '../helpers/helper.js';
+// import { authValues, sendErrorResponse, sendResponseWithoutData } from '../helpers/helper.js';
+// import { sendErrorResponse, sendResponseWithoutData } from '../helpers/helper.js';
 
 export const adminAuthentication = (req, res, next) => {
     try {
@@ -9,7 +10,7 @@ export const adminAuthentication = (req, res, next) => {
         const token = authHeader && authHeader.split(' ')[1];
 
         if (!token) {
-            return sendResponseWithoutData(res, 401, false, 'Unauthorized');
+            // return sendResponseWithoutData(res, 401, false, 'Unauthorized');
         }
         next();
         // jwt.verify(token, JWT_SECRET_TOKEN, async function (err) {
@@ -30,6 +31,6 @@ export const adminAuthentication = (req, res, next) => {
     } catch (err) {
         // errorLog(err);
         console.log(err);
-        return sendErrorResponse(res);
+        // return sendErrorResponse(res);
     }
 };
