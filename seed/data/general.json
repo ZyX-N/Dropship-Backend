@@ -1,0 +1,35 @@
+{
+  "role": [{ "title": "admin" }, { "title": "customer" }],
+  "user": {
+    "name": "admin",
+    "email": "rocketboy9198@gmail.com",
+    "password": "1234",
+    "mobile":"9876543210"
+  },
+  "category": [
+    {
+      "title": "household",
+      "slug": "household"
+    },
+    {
+      "title": "electronic",
+      "slug": "electronic"
+    },
+    {
+      "title": "cloths",
+      "slug": "cloths"
+    },
+    {
+      "title": "shoes",
+      "slug": "shoes"
+    },
+    {
+      "title": "accessories",
+      "slug": "accessories"
+    },
+    {
+      "title": "decorative",
+      "slug": "decorative"
+    }
+  ]
+}

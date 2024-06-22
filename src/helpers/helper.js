@@ -3,9 +3,8 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import { join } from 'path';
-import { Types, isValidObjectId } from 'mongoose';
-import User from '../models/User.js';
-import File from '../models/File.js';
+import { Types} from 'mongoose';
+// import File from '../models/File.js';
 import {
   JWT_EXPIRES_IN,
   JWT_SECRET_TOKEN,
@@ -14,13 +13,8 @@ import {
   FIRST_INVOICE_ID_PREFIX,
   FIRST_INVOICE_ID_POSTFIX,
 } from '../../config/config.js';
-import { imageValiation } from '../validators/imageValidator.js';
-import Cart from '../models/Cart.js';
-import FilterValue from '../models/FilterValue.js';
-
-import { writeFile } from 'fs/promises';
-import FilterCategory from '../models/FilterCategory.js';
-import Order from '../models/Order.js';
+// import { imageValiation } from '../validators/imageValidator.js';
+// import { writeFile } from 'fs/promises';
 
 // ******************* Variable Path Name Start *******************
 
@@ -82,81 +76,70 @@ export const hashPassword = async (password) => bcrypt.hash(password, 10);
 
 export const matchPassword = async (plainString, hashedString) => await bcrypt.compare(plainString, hashedString);
 
-export const authValues = async (authToken) => {
-  try {
-    let result = jwt.verify(authToken, JWT_SECRET_TOKEN);
-    let user = await User.findOne({ _id: result.id, isDeleted: false }).lean();
-    return user;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
-};
-
 export const removeSpace = (str, joinElement = '_') => str.replaceAll(/\s+/g, joinElement);
 
-export const fileUplaod = async (files, uploaderId = '') => {
-  try {
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath);
-    }
+// export const fileUplaod = async (files, uploaderId = '') => {
+//   try {
+//     if (!fs.existsSync(uploadPath)) {
+//       fs.mkdirSync(uploadPath);
+//     }
 
-    const currentTimeStamp = Date.now();
-    let response = {
-      status: false,
-      data: {},
-      message: 'Fail to upload!',
-    };
-    let fileArr = [];
+//     const currentTimeStamp = Date.now();
+//     let response = {
+//       status: false,
+//       data: {},
+//       message: 'Fail to upload!',
+//     };
+//     let fileArr = [];
 
-    let index = 0;
-    for (const file of files) {
-      let filename = `${currentTimeStamp}${index}_${removeSpace(file.name)}`;
-      let fullFileName = join(uploadPath, filename);
-      let isImageValid = await imageValiation(file);
+//     let index = 0;
+//     for (const file of files) {
+//       let filename = `${currentTimeStamp}${index}_${removeSpace(file.name)}`;
+//       let fullFileName = join(uploadPath, filename);
+//       let isImageValid = await imageValiation(file);
 
-      if (isImageValid.status) {
-        fileArr.push({ name: fullFileName, file: isImageValid.file });
-      } else {
-        response.message = isImageValid.message;
-        return response;
-      }
-      index++;
-    }
+//       if (isImageValid.status) {
+//         fileArr.push({ name: fullFileName, file: isImageValid.file });
+//       } else {
+//         response.message = isImageValid.message;
+//         return response;
+//       }
+//       index++;
+//     }
 
-    for (const x of fileArr) {
-      const imageDataBuffer = Buffer.from(x.file.data);
-      await writeFile(x.name, imageDataBuffer);
-      // await x.file.mv(x.name);
-    }
+//     for (const x of fileArr) {
+//       const imageDataBuffer = Buffer.from(x.file.data);
+//       await writeFile(x.name, imageDataBuffer);
+//       // await x.file.mv(x.name);
+//     }
 
-    let urlArr = fileArr.map((item) => {
-      return item.name;
-    });
+//     let urlArr = fileArr.map((item) => {
+//       return item.name;
+//     });
 
-    let saveFile = await File.create({
-      url: urlArr,
-      createdBy: uploaderId,
-      updatedBy: uploaderId,
-    });
+//     let saveFile = await File.create({
+//       url: urlArr,
+//       createdBy: uploaderId,
+//       updatedBy: uploaderId,
+//     });
 
-    if (saveFile) {
-      response.status = true;
-      response.data = saveFile;
-      response.message = 'Image uploaded successfully';
-    } else {
-      response.message = 'Fail to upload image';
-    }
+//     if (saveFile) {
+//       response.status = true;
+//       response.data = saveFile;
+//       response.message = 'Image uploaded successfully';
+//     } else {
+//       response.message = 'Fail to upload image';
+//     }
 
-    return response;
-  } catch (err) {
-    console.error(err);
-    return {
-      status: false,
-      message: 'Fail to upload!',
-    };
-  }
-};
+//     return response;
+//   } catch (err) {
+//     console.error(err);
+//     return {
+//       status: false,
+//       message: 'Fail to upload!',
+//     };
+//   }
+// };
 
 export const makeObjectId = (id) => new Types.ObjectId(id);
 
@@ -203,103 +186,6 @@ export const getTimePlusXMinutes = (timeToIncrese = 30) => {
   return newTime;
 };
 
-export const removeProductsFromCart = async (productId = null) => {
-  if (productId && isValidObjectId(productId)) {
-    await Cart.deleteMany({ product: productId });
-    return true;
-  }
-  return false;
-};
-
-export const getFilterValueById = async (id = null) => {
-  if (!id) {
-    return null;
-  }
-  id = String(id);
-
-  let filterCategoryDataValue = await FilterValue.findOne({
-    _id: id,
-    isDeleted: false,
-  })
-    .populate({ path: 'filterCategoryId', select: 'name field type' })
-    .select('-isDeleted -__v')
-    .lean();
-
-  return filterCategoryDataValue;
-};
-
-export const getSortingFilter = (name = null) => {
-  try {
-    if (!name) {
-      return null;
-    }
-    name = String(name);
-
-    switch (name) {
-      case 'ascending':
-        return { price: 1 };
-      case 'descending':
-        return { price: -1 };
-      case 'ascending_rating':
-        return { rating: 1 };
-      case 'descending_rating':
-        return { price: -1 };
-      case 'discount':
-        return { offer: -1 };
-
-      default:
-        return null;
-    }
-
-    return null;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
-};
-
-export const addFilter = async (name = null, title = null, match = null, min = null, max = null) => {
-  try {
-    if (!name || !title) {
-      return null;
-    }
-
-    name = String(name);
-    title = String(title);
-
-    let filterCategoryDetails = await FilterCategory.findOne({ name, isDeleted: false }).lean();
-
-    if (!filterCategoryDetails) {
-      return null;
-    }
-
-    let dataObj = {
-      filterCategoryId: filterCategoryDetails._id,
-      title: title,
-    };
-
-    if (filterCategoryDetails.type === 'match') {
-      if (!match) {
-        return null;
-      }
-      dataObj.match = match;
-    } else if (filterCategoryDetails.type === 'range') {
-      if (!min && !max) {
-        return null;
-      }
-      dataObj.min = min || null;
-      dataObj.max = max || null;
-    }
-
-    let createFilter = await FilterValue.create(dataObj);
-
-    return createFilter;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
-};
-
 export const generateRandomCouponCode = (length = 15) => {
   try {
     if (isNaN(length) || length > 50) {
@@ -328,80 +214,6 @@ export const getPercentageToNumber = (number = null, percent = null) => {
     }
 
     return (number * percent) / 100;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
-};
-
-export const generateOrderId = async () => {
-  try {
-    const spliter = FIRST_ORDER_ID_PREFIX;
-    let previousOrderId = null;
-
-    let lastOrderId = await Order.find().sort({ createdAt: -1 }).limit(1);
-
-    if (lastOrderId.length === 0) {
-      previousOrderId = `${FIRST_ORDER_ID_PREFIX}${FIRST_ORDER_ID_POSTFIX}`;
-      return previousOrderId;
-    }
-
-    if (lastOrderId.length > 0) {
-      previousOrderId = lastOrderId[0].orderId;
-    }
-
-    if (previousOrderId && previousOrderId.split(spliter).length === 2) {
-      let orderNumber = Number(previousOrderId.split(spliter)[1]);
-
-      if (isNaN(orderNumber)) {
-        return null;
-      }
-      orderNumber++;
-      let arrangedNumber = String(orderNumber).padStart(5, '0');
-
-      const newOrderId = previousOrderId.split(spliter)[0] + spliter + arrangedNumber;
-
-      return newOrderId;
-    }
-
-    return null;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
-};
-
-export const generateInvoiceId = async () => {
-  try {
-    const spliter = 'ZX';
-    let previousInvoiceId = null;
-    const currentYear = new Date().getFullYear();
-
-    let lastOrderId = await Order.find().sort({ createdAt: -1 }).limit(1);
-
-    if (lastOrderId.length === 0) {
-      previousInvoiceId = `${FIRST_INVOICE_ID_PREFIX}${currentYear}ZX${FIRST_INVOICE_ID_POSTFIX}`;
-      return previousInvoiceId;
-    }
-
-    if (lastOrderId.length > 0) {
-      previousInvoiceId = lastOrderId[0].invoiceNo;
-    }
-
-    if (previousInvoiceId && previousInvoiceId.split(spliter).length === 2) {
-      let invoiceNumber = Number(previousInvoiceId.split(spliter)[1]);
-
-      if (isNaN(invoiceNumber)) {
-        return null;
-      }
-      invoiceNumber++;
-      let arrangedNumber = String(invoiceNumber).padStart(5, '0');
-
-      const newOrderId = previousInvoiceId.split(spliter)[0] + spliter + arrangedNumber;
-      return newOrderId;
-    }
-
-    return null;
   } catch (error) {
     console.log(error);
     return null;
