@@ -23,6 +23,7 @@ export const createUser = async (data) => {
             mobile: data.mobile,
             alternateMobile: null,
             role: roleInfo._id,
+            type: roleInfo.title,
             isVerified: true
         });
         console.log(`User created successfully!`);

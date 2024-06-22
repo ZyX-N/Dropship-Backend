@@ -8,7 +8,7 @@ export const APP_ENV = process.env.hasOwnProperty('APP_ENV') ? process.env.APP_E
 export const PORT = process.env.hasOwnProperty('PORT') ? process.env.PORT : '5000';
 export const JWT_SECRET_TOKEN = process.env.hasOwnProperty('JWT_SECRET_TOKEN')
   ? process.env.JWT_SECRET_TOKEN
-  : '32c103437dbee3dae37dcbe8cd459226fc47bbd9942e335c088a9ecbf908fe8fa7f828e4c8c354e1bf07f3ac2c084610b3e83d18a91b65e390ee83231312eefb';
+  : '32c103437dbee3dae37dcbe8cd459226fc47bbd9942e335c0';
 // export const JWT_EXPIRES_IN = process.env.hasOwnProperty('JWT_EXPIRES_IN') ? process.env.JWT_EXPIRES_IN : '24h';
 export const JWT_EXPIRES_IN = '30d';
 

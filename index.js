@@ -7,7 +7,7 @@ import https from 'https';
 import http from 'http';
 
 const app = express();
-databaseConnection();
+await databaseConnection();
 
 /***************
   MIDDLEWARE 

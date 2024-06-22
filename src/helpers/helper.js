@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import { join } from 'path';
-import { Types} from 'mongoose';
+import { Types } from 'mongoose';
 // import File from '../models/File.js';
 import {
   JWT_EXPIRES_IN,
@@ -15,6 +15,7 @@ import {
 } from '../../config/config.js';
 // import { imageValiation } from '../validators/imageValidator.js';
 // import { writeFile } from 'fs/promises';
+import httpStatusCodes from "../../utils/statusCodes.js";
 
 // ******************* Variable Path Name Start *******************
 
@@ -45,6 +46,41 @@ export const sendResponseWithoutData = (res, statusCode, status, msg) => {
     status,
     msg,
     data: null,
+  });
+};
+
+export const sendResponseBadReq = (res, msg) => {
+  return res.status(httpStatusCodes.BAD_REQUEST).json({
+    status: false,
+    msg: msg ?? ""
+  });
+};
+
+export const sendResponseOk = (res, msg, data) => {
+  if (data) {
+    return res.status(httpStatusCodes.OK).json({
+      status: true,
+      msg: msg ?? "",
+      data: data || null
+    });
+  }
+  return res.status(httpStatusCodes.OK).json({
+    status: true,
+    msg: msg ?? ""
+  });
+};
+
+export const sendResponseCreated = (res, msg, data) => {
+  if (data) {
+    return res.status(httpStatusCodes.CREATED).json({
+      status: true,
+      msg: msg ?? "",
+      data: data || null
+    });
+  }
+  return res.status(httpStatusCodes.CREATED).json({
+    status: true,
+    msg: msg ?? ""
   });
 };
 
