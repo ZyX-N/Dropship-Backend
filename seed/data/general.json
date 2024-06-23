@@ -1,10 +1,16 @@
 {
+  "general": {
+    "name": "Zixen",
+    "logo": "https://img.freepik.com/free-vector/bird-colorful-logo-gradient-vector_343694-1365.jpg?size=338&ext=jpg&ga=GA1.1.1141335507.1719144000&semt=sph",
+    "instagram": "https://instagram.com",
+    "facebook": "https://facebook.com"
+  },
   "role": [{ "title": "admin" }, { "title": "customer" }],
   "user": {
     "name": "admin",
     "email": "rocketboy9198@gmail.com",
     "password": "1234",
-    "mobile":"9876543210"
+    "mobile": "9876543210"
   },
   "category": [
     {

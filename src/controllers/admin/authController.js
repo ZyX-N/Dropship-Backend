@@ -1,7 +1,7 @@
 import { detailUser_s } from "../../service/UserService.js";
-import { matchPassword, getJwtToken, sendResponseOk, sendResponseBadReq } from "../../helpers/helper.js";
+import { matchPassword, getJwtToken, sendResponseOk, sendResponseBadReq, tryCatch } from "../../helpers/helper.js";
 
-export const login = async (req, res) => {
+export const login = tryCatch(async (req, res) => {
     let { username, password } = req.body;
     const key = username.includes('@') ? 'email' : 'mobile'
 
@@ -10,4 +10,4 @@ export const login = async (req, res) => {
 
     if (!await matchPassword(password, userInfo.password)) return sendResponseBadReq(res, 'Invalid cerdentials!');
     return sendResponseOk(res, 'Logged in successfully!', await getJwtToken({ _id: userInfo._id }));
-}
+})

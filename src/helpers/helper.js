@@ -25,6 +25,18 @@ const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567
 
 // ******************* Variable Path Name End *********************
 
+export const tryCatch = (fn) => {
+  return async (req, res) => {
+    try {
+      await fn(req, res);
+    } catch (error) {
+      console.log(error);
+      return sendErrorResponse(res);
+    }
+  }
+
+}
+
 export const sendResponseWithData = (res, statusCode, status, msg, data, length = false) => {
   if (length) {
     return res.status(statusCode).json({
@@ -85,7 +97,7 @@ export const sendResponseCreated = (res, msg, data) => {
 };
 
 export const sendErrorResponse = (res) => {
-  return res.status(500).send({ status: false, msg: 'Something Went Wrong' });
+  return res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send({ status: false, msg: 'Server down, try again in sometime or report the issue!' });
 };
 
 export const getJwtToken = (data) => {

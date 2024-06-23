@@ -5,6 +5,7 @@ import { createRoles } from './function/role.js';
 import { DB_HOST, DB_NAME, DB_PORT, SEEDER_PASSWORD } from '../config/config.js';
 import { createUser } from './function/user.js';
 import { createCategory } from './function/category.js';
+import { createSetting } from './function/setting.js';
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -37,6 +38,7 @@ const performSeeding = () => {
 
         if (generalData) {
           generalData = JSON.parse(generalData);
+          await createSetting(generalData.general);
           await createRoles(generalData.role);
           await createUser(generalData.user)
           await createCategory(generalData.category)
