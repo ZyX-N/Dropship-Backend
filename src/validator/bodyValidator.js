@@ -1,10 +1,10 @@
 import { validationResult } from "express-validator";
 import httpStatusCodes from "../../utils/statusCodes.js";
 
-export default bodyValidation = (req, res, next) => {
+const bodyValidation = (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        res.status(httpStatusCodes.HTTP_STATUS_BAD_REQUEST).json({
+        res.status(httpStatusCodes.BAD_REQUEST).json({
             status: false,
             msg: errors?.array()[0]?.msg
         });
@@ -12,3 +12,5 @@ export default bodyValidation = (req, res, next) => {
         next();
     }    
 }
+
+export default bodyValidation;
