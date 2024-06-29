@@ -6,6 +6,7 @@ const productSchema = Schema(
         hindiTitle: { type: String, index: true },
         description: { type: String },
         hindiDescription: { type: String },
+        slug: { type: String },
         image: { type: [Schema.Types.ObjectId], ref: 'file', default: [] },
         category: { type: Schema.Types.ObjectId, ref: 'category', required: true },
         strikePrice: { type: Number, default: 0 },

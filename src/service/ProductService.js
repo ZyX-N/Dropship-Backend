@@ -8,10 +8,12 @@ export const insertProduct_s = async (args = {}) => {
     return await query;
 }
 
-export const listProduct_s = async (args = {}, select = "", pagination = false, page = 1, count = 10) => {
+export const listProduct_s = async (search = "", pagination = false, page = 1, count = 10) => {
+    let data = null;
+    let totalCount = 0;
 
     let pipeline = [
-        { $match: { ...filter, ...args } },
+        { $match: { ...filter } },
         {
             $lookup: {
                 from: 'categories',
@@ -25,6 +27,16 @@ export const listProduct_s = async (args = {}, select = "", pagination = false, 
             $unwind: { path: '$category', preserveNullAndEmptyArrays: true }
         },
         {
+            $match: {
+                $or: [
+                    { title: { $regex: search, $options: 'i' } },
+                    { hindiTitle: { $regex: search, $options: 'i' } },
+                    { description: { $regex: search, $options: 'i' } },
+                    { hindiDescription: { $regex: search, $options: 'i' } },
+                ]
+            }
+        },
+        {
             $project: {
                 isDeleted: 0,
                 createdBy: 0,
@@ -36,15 +48,18 @@ export const listProduct_s = async (args = {}, select = "", pagination = false, 
         }
     ]
 
+    let countQuery = await Product.aggregate([...pipeline, ...[{ $count: 'totalCount' }]]);
+    totalCount = countQuery[0].totalCount;
+
     if (pagination) {
-        pipeline.push({ $skip: (page - 1) * count },
+        pipeline.push(
+            { $skip: (page - 1) * count },
             { $limit: count }
         );
     }
 
-    let query = Product.aggregate(pipeline);
-    
-    return await query;
+    data = await Product.aggregate(pipeline);
+    return { totalCount, data };
 }
 
 export const detailProduct_s = async (args = {}, select = "", populate = []) => {
@@ -52,12 +67,12 @@ export const detailProduct_s = async (args = {}, select = "", populate = []) => 
     return await query;
 }
 
-// export const updateCategory_s = async (args = {}, data = {}) => {
-//     let query = Category.updateOne({ ...filter, ...args }, { $set: data });
-//     return await query;
-// }
+export const updateProduct_s = async (args = {}, data = {}) => {
+    let query = Product.findOneAndUpdate({ ...filter, ...args }, data);
+    return await query;
+}
 
-// export const deleteCategory_s = async (args = {}) => {
-//     let query = Category.findOneAndUpdate({ ...filter, ...args }, { isDeleted: true });
-//     return await query;
-// }
+export const deleteProduct_s = async (args = {}) => {
+    let query = Product.findOneAndUpdate({ ...filter, ...args }, { isDeleted: true });
+    return await query;
+}

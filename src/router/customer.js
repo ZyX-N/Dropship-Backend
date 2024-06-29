@@ -4,6 +4,7 @@ import { signin, signup } from "../controllers/customer/authController.js";
 import { body } from "express-validator";
 import { categoryList } from "../controllers/customer/categoryController.js";
 import { settingList } from "../controllers/customer/settingController.js";
+import { productDetails, productList } from "../controllers/customer/productController.js";
 
 export const customerRoute = Router();
 export const customerAuthRoute = Router();
@@ -28,4 +29,9 @@ customerRoute.group("/settings", (customerRoute) => {
 
 customerRoute.group("/category", (customerRoute) => {
     customerRoute.get("/", categoryList);
+});
+
+customerRoute.group("/product", (customerRoute) => {
+    customerRoute.get("/", productList);
+    customerRoute.get("/:slug", productDetails);
 });
