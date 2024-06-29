@@ -16,6 +16,7 @@ import {
 // import { imageValiation } from '../validators/imageValidator.js';
 // import { writeFile } from 'fs/promises';
 import httpStatusCodes from "../../utils/statusCodes.js";
+import { detailUser_s } from '../service/UserService.js';
 
 // ******************* Variable Path Name Start *******************
 
@@ -119,6 +120,17 @@ export const getJwtValue = (token) => {
     return null;
   }
 };
+
+export const authValues = async (token) => {
+  try {
+    let val = getJwtValue(token);
+    let userInfo = await detailUser_s({ _id: val?._id });
+    return userInfo;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}
 
 export const hashPassword = async (password) => bcrypt.hash(password, 10);
 

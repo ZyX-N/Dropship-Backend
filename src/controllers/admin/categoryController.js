@@ -7,8 +7,8 @@ export const createCategory = tryCatch(async (req, res) => {
     let { title } = req.body;
     let newData = {
         title,
-        createdBy,
-        updatedBy
+        createdBy: req.apiUser._id,
+        updatedBy: req.apiUser._id
     }
 
     if (req.body.slug) {
@@ -44,7 +44,7 @@ export const editCategory = tryCatch(async (req, res) => {
     let updatedData = {
         title: req.body.title,
         isActive: req.body.active,
-        // updatedBy: req.apiUser._id,
+        updatedBy: req.apiUser._id,
         updatedAt: Date.now()
     }
 
