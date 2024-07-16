@@ -5,7 +5,7 @@ import httpStatusCodes from "../../../utils/statusCodes.js";
 import { deleteProduct_s, detailProduct_s, insertProduct_s, listProduct_s, updateProduct_s } from "../../service/ProductService.js";
 
 export const createProduct = tryCatch(async (req, res) => {
-    let { title, description, image, category, price, stock } = req.body;
+    let { title, description, image, category, price, stock, active } = req.body;
 
     const categoryInfo = await detailCategory_s({ _id: category });
     if (!isValidObjectId(category) || !categoryInfo) return sendResponseBadReq(res, "Invalid category id!");
@@ -22,6 +22,7 @@ export const createProduct = tryCatch(async (req, res) => {
         category,
         price,
         stock,
+        active,
         createdBy: req.apiUser._id,
         updatedBy: req.apiUser._id
     }
@@ -34,6 +35,8 @@ export const createProduct = tryCatch(async (req, res) => {
     if ('hindiTitle' in req.body && req.body.hindiTitle) newData.hindiTitle = req.body.hindiTitle;
 
     if ('hindiDescription' in req.body && req.body.hindiDescription) newData.hindiDescription = req.body.hindiDescription;
+
+    if ('slug' in req.body && req.body.slug) newData.slug = req.body.slug;
 
     let insertStatus = await insertProduct_s(newData);
     if (!insertStatus) return sendResponseBadReq(res, 'Product insertion failed! try again in sometime or report the issue!')
@@ -87,7 +90,9 @@ export const editProduct = tryCatch(async (req, res) => {
         updatedBy: req.apiUser._id
     }
 
-    if ('slug' in req.body && req.body.slug === true) newData.slug = slug;
+    if ('generateSlug' in req.body && req.body.generateSlug) newData.slug = slug;
+
+    if ('slug' in req.body) newData.slug = req.body.slug;
 
     if ('strikePrice' in req.body) {
         if (req.body.strikePrice < price) return sendResponseBadReq(res, "strikePrice value should be greater than price");

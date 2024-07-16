@@ -2,7 +2,7 @@ import { Router } from "express";
 import expressGroupRoutes from 'express-group-routes';
 import { login } from "../controllers/admin/authController.js";
 import { body } from "express-validator";
-import { createCategory, deleteCategory, editCategory, getCategoryDetails, getCategoryList } from "../controllers/admin/categoryController.js";
+import { createCategory, deleteCategory, editCategory, getCategoryDetails, getCategoryList, getCategoryListDropDown } from "../controllers/admin/categoryController.js";
 import bodyValidation from "../validator/bodyValidator.js";
 import { createProduct, deleteProduct, editProduct, getProductDetails, getProductList } from "../controllers/admin/productController.js";
 
@@ -35,6 +35,7 @@ adminAuthRoute.group("/category", (adminAuthRoute) => {
         editCategory)
 
     adminAuthRoute.get("/", getCategoryList)
+    adminAuthRoute.get("/drop-down-list", getCategoryListDropDown)
     adminAuthRoute.get("/:id", getCategoryDetails)
     adminAuthRoute.delete("/:id", deleteCategory)
 });
@@ -51,6 +52,8 @@ adminAuthRoute.group("/product", (adminAuthRoute) => {
             body('strikePrice').optional().isInt({ min: 0 }).withMessage('strikePrice field value should be greater than 0'),
             body('price').notEmpty().withMessage('price field value is mandatory').isInt({ min: 0 }).withMessage('price field value should be greater than 0'),
             body('stock').notEmpty().withMessage('stock field value is mandatory').isInt({ min: 0 }).withMessage('stock field value should be greater than 0'),
+            body('active').notEmpty().withMessage('active field value is mandatory').isBoolean().withMessage('active field value should be a boolean'),
+            body('slug').optional(),
         ],
         bodyValidation,
         createProduct
@@ -68,7 +71,8 @@ adminAuthRoute.group("/product", (adminAuthRoute) => {
             body('price').notEmpty().withMessage('price field value is mandatory').isInt({ min: 0 }).withMessage('price field value should be greater than 0'),
             body('stock').notEmpty().withMessage('stock field value is mandatory').isInt({ min: 0 }).withMessage('stock field value should be greater than 0'),
             body('active').notEmpty().withMessage('active field value is mandatory').isBoolean().withMessage('active field value should be a boolean'),
-            body('slug').optional().isBoolean().withMessage('slug field value should be a boolean'),
+            body('slug').optional(),
+            body('generateSlug').optional().isBoolean().withMessage('generateSlug field value should be a boolean'),
         ],
         bodyValidation,
         editProduct)

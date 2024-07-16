@@ -60,3 +60,9 @@ export const deleteCategory = tryCatch(async (req, res) => {
     await deleteCategory_s({ _id: req.params.id });
     return sendResponseOk(res, 'Category deleted successfully!');
 });
+
+export const getCategoryListDropDown = tryCatch(async (req, res) => {
+    let categoryList = await listCategory_s({}, "title");
+    if (categoryList.length > 0) return sendResponseOk(res, 'Category list fetched successfully!', categoryList);
+    return sendResponseOk(res, 'No category available!', []);
+});
