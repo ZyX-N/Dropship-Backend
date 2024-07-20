@@ -3,7 +3,8 @@ import fileUpload from 'express-fileupload';
 import { PORT, APP_ENV } from './config/config.js';
 import databaseConnection from './config/database.js'; // Database Connection
 import { api } from './src/router/index.js';
-import { join, dirname } from "path"
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import https from 'https';
 import http from 'http';
 import cors from "cors";
@@ -22,8 +23,8 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(fileUpload());
 
-const __dirname = dirname(import.meta.url);
-console.log(__dirname)
+const __dirname = dirname(fileURLToPath(import.meta.url));
+console.log(__dirname);
 app.use('/image', express.static(join(__dirname, 'public/img')));
 
 app.use('/api', api);
