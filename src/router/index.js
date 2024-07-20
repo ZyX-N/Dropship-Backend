@@ -7,8 +7,6 @@ import { customerAuthentication } from "../middlewares/customer.js";
 
 export const api = Router();
 
-api.use(cors());
-
 // **************************************
 // ******** Unauthenticated Route *******
 // **************************************
