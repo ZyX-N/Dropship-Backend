@@ -22,11 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(fileUpload());
 
-const __dirname = import.meta.dirname;
-console.log(import.meta);
-console.log("import.meta ---->");
-console.log(__dirname);
-console.log("-------");
+const __dirname = import.meta.url;
 app.use('/image', express.static(join(__dirname, 'public/img')));
 
 app.use('/api', api);
