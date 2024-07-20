@@ -3,6 +3,7 @@ import { model, Schema } from 'mongoose';
 const fileSchema = Schema(
     {
         path: { type: String },
+        filename: { type: String },
         createdBy: { type: Schema.Types.ObjectId, ref: 'user', default: null },
         updatedBy: { type: Schema.Types.ObjectId, ref: 'user', default: null },
     },

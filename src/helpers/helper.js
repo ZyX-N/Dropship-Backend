@@ -136,70 +136,7 @@ export const hashPassword = async (password) => bcrypt.hash(password, 10);
 
 export const matchPassword = async (plainString, hashedString) => await bcrypt.compare(plainString, hashedString);
 
-export const removeSpace = (str, joinElement = '_') => str.replaceAll(/\s+/g, joinElement);
-
-// export const fileUplaod = async (files, uploaderId = '') => {
-//   try {
-//     if (!fs.existsSync(uploadPath)) {
-//       fs.mkdirSync(uploadPath);
-//     }
-
-//     const currentTimeStamp = Date.now();
-//     let response = {
-//       status: false,
-//       data: {},
-//       message: 'Fail to upload!',
-//     };
-//     let fileArr = [];
-
-//     let index = 0;
-//     for (const file of files) {
-//       let filename = `${currentTimeStamp}${index}_${removeSpace(file.name)}`;
-//       let fullFileName = join(uploadPath, filename);
-//       let isImageValid = await imageValiation(file);
-
-//       if (isImageValid.status) {
-//         fileArr.push({ name: fullFileName, file: isImageValid.file });
-//       } else {
-//         response.message = isImageValid.message;
-//         return response;
-//       }
-//       index++;
-//     }
-
-//     for (const x of fileArr) {
-//       const imageDataBuffer = Buffer.from(x.file.data);
-//       await writeFile(x.name, imageDataBuffer);
-//       // await x.file.mv(x.name);
-//     }
-
-//     let urlArr = fileArr.map((item) => {
-//       return item.name;
-//     });
-
-//     let saveFile = await File.create({
-//       url: urlArr,
-//       createdBy: uploaderId,
-//       updatedBy: uploaderId,
-//     });
-
-//     if (saveFile) {
-//       response.status = true;
-//       response.data = saveFile;
-//       response.message = 'Image uploaded successfully';
-//     } else {
-//       response.message = 'Fail to upload image';
-//     }
-
-//     return response;
-//   } catch (err) {
-//     console.error(err);
-//     return {
-//       status: false,
-//       message: 'Fail to upload!',
-//     };
-//   }
-// };
+export const removeSpace = (str, joinElement = '-') => str.replaceAll(/\s+/g, joinElement);
 
 export const makeObjectId = (id) => new Types.ObjectId(id);
 

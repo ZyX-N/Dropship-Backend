@@ -5,6 +5,7 @@ import { body } from "express-validator";
 import { createCategory, deleteCategory, editCategory, getCategoryDetails, getCategoryList, getCategoryListDropDown } from "../controllers/admin/categoryController.js";
 import bodyValidation from "../validator/bodyValidator.js";
 import { createProduct, deleteProduct, editProduct, getProductDetails, getProductList } from "../controllers/admin/productController.js";
+import { imageUpload } from "../controllers/admin/uploadsController.js";
 
 export const adminRoute = Router();
 export const adminAuthRoute = Router();
@@ -16,11 +17,16 @@ adminRoute.group("/auth", (adminRoute) => {
     ], bodyValidation, login)
 });
 
+adminAuthRoute.group("/uploads", (adminAuthRoute) => {
+    adminAuthRoute.post("/", imageUpload);
+});
+
 adminAuthRoute.group("/category", (adminAuthRoute) => {
     adminAuthRoute.post("/",
         [
             body('title').notEmpty().withMessage('title field value is mandatory'),
             body('slug').optional(),
+            body('image').optional(),
         ],
         bodyValidation,
         createCategory)
@@ -29,6 +35,7 @@ adminAuthRoute.group("/category", (adminAuthRoute) => {
         [
             body('title').notEmpty().withMessage('title field value is mandatory'),
             body('active').notEmpty().withMessage('active field value is mandatory').isBoolean().withMessage('active field value should be boolean type'),
+            body('image').optional(),
             body('slug').optional(),
         ],
         bodyValidation,

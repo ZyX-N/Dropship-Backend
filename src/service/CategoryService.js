@@ -27,3 +27,8 @@ export const deleteCategory_s = async (args = {}) => {
     let query = Category.findOneAndUpdate({ ...filter, ...args }, { isDeleted: true });
     return await query;
 }
+
+export const aggregateCategory_s = async (pipeline) => {
+    let query = Category.aggregate(pipeline);
+    return await query;
+}
