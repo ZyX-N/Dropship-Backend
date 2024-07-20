@@ -5,6 +5,7 @@ import databaseConnection from './config/database.js'; // Database Connection
 import { api } from './src/router/index.js';
 import https from 'https';
 import http from 'http';
+import cors from "cors";
 
 const app = express();
 await databaseConnection();
