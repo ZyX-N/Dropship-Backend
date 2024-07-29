@@ -38,6 +38,8 @@ export const listProduct_s = async (search = "", pagination = false, page = 1, c
         },
         {
             $project: {
+                hindiDescription: 0,
+                description: 0,
                 isDeleted: 0,
                 createdBy: 0,
                 updatedBy: 0,
@@ -74,5 +76,10 @@ export const updateProduct_s = async (args = {}, data = {}) => {
 
 export const deleteProduct_s = async (args = {}) => {
     let query = Product.findOneAndUpdate({ ...filter, ...args }, { isDeleted: true });
+    return await query;
+}
+
+export const pipelineProduct_s = async (pipeline = []) => {
+    let query = Product.aggregate(pipeline);
     return await query;
 }

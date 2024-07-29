@@ -3,7 +3,7 @@ import { model, Schema } from 'mongoose';
 const categorySchema = Schema(
     {
         title: { type: String, index: true },
-        slug: { type: String, index: true },
+        slug: { type: String, index: true,lowercase: true, trim: true },
         image: { type: Schema.Types.ObjectId, ref: "file", default: null },
         isActive: { type: Boolean, default: true },
         isDeleted: { type: Boolean, default: false },

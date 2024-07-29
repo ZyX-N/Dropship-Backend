@@ -2,7 +2,7 @@ import { detailCategory_s } from "../../service/CategoryService.js";
 import { sendResponseOk, sendResponseBadReq, tryCatch, sendResponseWithoutData, removeSpace } from "../../helpers/helper.js";
 import { isValidObjectId } from "mongoose";
 import httpStatusCodes from "../../../utils/statusCodes.js";
-import { deleteProduct_s, detailProduct_s, insertProduct_s, listProduct_s, updateProduct_s } from "../../service/ProductService.js";
+import { deleteProduct_s, detailProduct_s, insertProduct_s, pipelineProduct_s, updateProduct_s } from "../../service/ProductService.js";
 
 export const createProduct = tryCatch(async (req, res) => {
     let { title, description, image, category, price, stock, active } = req.body;
@@ -37,6 +37,7 @@ export const createProduct = tryCatch(async (req, res) => {
     if ('hindiDescription' in req.body && req.body.hindiDescription) newData.hindiDescription = req.body.hindiDescription;
 
     if ('slug' in req.body && req.body.slug) newData.slug = req.body.slug;
+    if ('adminRating' in req.body && req.body.adminRating) newData.adminRating = req.body.adminRating;
 
     let insertStatus = await insertProduct_s(newData);
     if (!insertStatus) return sendResponseBadReq(res, 'Product insertion failed! try again in sometime or report the issue!')
@@ -50,12 +51,60 @@ export const getProductList = tryCatch(async (req, res) => {
     const pagination = req.query?.all === 'true' ? false : true;
     const search = req.query?.search || "";
 
-    let productList = await listProduct_s(search, pagination, page, count);
+    let pipeline = [
+        { $match: { isDeleted: false } },
+        {
+            $lookup: {
+                from: 'categories',
+                foreignField: '_id',
+                localField: 'category',
+                as: 'category',
+                pipeline: [{ $match: { isDeleted: false } }, { $project: { isDeleted: 0, createdBy: 0, updatedBy: 0, createdAt: 0, updatedAt: 0, __v: 0 } }]
+            }
+        },
+        {
+            $unwind: { path: '$category', preserveNullAndEmptyArrays: true }
+        },
+        {
+            $match: {
+                $or: [
+                    { title: { $regex: search, $options: 'i' } },
+                    { hindiTitle: { $regex: search, $options: 'i' } },
+                    { description: { $regex: search, $options: 'i' } },
+                    { hindiDescription: { $regex: search, $options: 'i' } },
+                ]
+            }
+        },
+        {
+            $project: {
+                hindiDescription: 0,
+                description: 0,
+                isDeleted: 0,
+                createdBy: 0,
+                updatedBy: 0,
+                createdAt: 0,
+                updatedAt: 0,
+                __v: 0,
+            }
+        }
+    ];
+
+    const docCount = await pipelineProduct_s([...pipeline, ...[{ $count: 'totalCount' }]]);
+
+    if (pagination) {
+        pipeline.push(
+            { $skip: (page - 1) * count },
+            { $limit: count }
+        );
+    }
+
+    let productList = await pipelineProduct_s(pipeline)
+
     return res.status(httpStatusCodes.OK).json({
         status: true,
         msg: "Product list fetched successfully!",
-        data: productList.data,
-        totalCount: productList.totalCount
+        data: productList,
+        totalCount: docCount.length > 0 ? docCount[0].totalCount : 0
     })
 });
 
@@ -102,6 +151,8 @@ export const editProduct = tryCatch(async (req, res) => {
     if ('hindiTitle' in req.body && req.body.hindiTitle) newData.hindiTitle = req.body.hindiTitle;
 
     if ('hindiDescription' in req.body && req.body.hindiDescription) newData.hindiDescription = req.body.hindiDescription;
+
+    if ('adminRating' in req.body && req.body.adminRating) newData.adminRating = req.body.adminRating;
 
 
     let updateStatus = await updateProduct_s({ _id: req.params.id }, newData);

@@ -61,6 +61,7 @@ adminAuthRoute.group("/product", (adminAuthRoute) => {
             body('stock').notEmpty().withMessage('stock field value is mandatory').isInt({ min: 0 }).withMessage('stock field value should be greater than 0'),
             body('active').notEmpty().withMessage('active field value is mandatory').isBoolean().withMessage('active field value should be a boolean'),
             body('slug').optional(),
+            body('adminRating').optional(),
         ],
         bodyValidation,
         createProduct
@@ -79,6 +80,7 @@ adminAuthRoute.group("/product", (adminAuthRoute) => {
             body('stock').notEmpty().withMessage('stock field value is mandatory').isInt({ min: 0 }).withMessage('stock field value should be greater than 0'),
             body('active').notEmpty().withMessage('active field value is mandatory').isBoolean().withMessage('active field value should be a boolean'),
             body('slug').optional(),
+            body('adminRating').optional(),
             body('generateSlug').optional().isBoolean().withMessage('generateSlug field value should be a boolean'),
         ],
         bodyValidation,
