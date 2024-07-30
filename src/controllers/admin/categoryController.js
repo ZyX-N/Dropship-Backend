@@ -30,7 +30,7 @@ export const createCategory = tryCatch(async (req, res) => {
 });
 
 export const getCategoryList = tryCatch(async (req, res) => {
-    const serverPrefix = `${req.protocol}://${req.headers.host}/`
+    const serverPrefix = `${req.protocol}://${req.headers.host}/`;
     let pipeline = [
         { $match: { isDeleted: false } },
         {
