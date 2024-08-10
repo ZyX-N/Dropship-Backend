@@ -152,19 +152,19 @@ export const productDetails = tryCatch(async (req, res) => {
 });
 
 export const productListByCategory = tryCatch(async (req, res) => {
-  
+
   const page = Number(req.query?.page || 1);
   const count = Number(req.query?.count || 10);
   const pagination = req.query?.all === 'true' ? false : true;
   const search = req.query?.search || '';
   const serverPrefix = `${req.protocol}://${req.headers.host}/`;
 
-  const { categoryId } = req.params;
+  const { categorySlug } = req.params;
 
-  if (!isValidObjectId(categoryId) || !(await detailCategory_s({ _id: categoryId }))) return sendResponseBadReq(res, "Invalid categoryId provided");
+  if (!(await detailCategory_s({ slug: categorySlug }))) return sendResponseBadReq(res, "Invalid categoryId provided");
 
   let pipeline = [
-    { $match: { isDeleted: false, category: makeObjectId(categoryId) } },
+    { $match: { isDeleted: false } },
     {
       $lookup: {
         from: 'categories',
@@ -203,6 +203,7 @@ export const productListByCategory = tryCatch(async (req, res) => {
     },
     {
       $match: {
+        "category.slug": categorySlug,
         $or: [
           { title: { $regex: search, $options: 'i' } },
           { hindiTitle: { $regex: search, $options: 'i' } },
