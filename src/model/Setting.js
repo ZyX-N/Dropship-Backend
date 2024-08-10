@@ -1,13 +1,18 @@
 import { model, Schema } from 'mongoose';
 
 const settingSchema = Schema(
-    {
-        name: { type: String },
-        logo: { type: String },
-        instagram: { type: String },
-        facebook: { type: String },
-    },
-    { versionKey: false },
+  {
+    name: { type: String, default: '' },
+    email: { type: String, default: '' },
+    mobile: { type: String, default: '' },
+    logo: { type: Schema.Types.ObjectId, ref: 'file', default: null },
+    address: { type: String, default: '' },
+    instagram: { type: String, default: '' },
+    facebook: { type: String, default: '' },
+    twitter: { type: String, default: '' },
+    youtube: { type: String, default: '' },
+  },
+  { versionKey: false, timestamp: false },
 );
 
 const Setting = model('setting', settingSchema);

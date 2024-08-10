@@ -26,6 +26,7 @@ import {
   editStaticPage,
   deleteStaticPage,
 } from '../controllers/admin/staticPageController.js';
+import { getSettings, insertSettings } from '../controllers/admin/settingController.js';
 
 export const adminRoute = Router();
 export const adminAuthRoute = Router();
@@ -192,4 +193,49 @@ adminAuthRoute.group('/static-page', (adminAuthRoute) => {
   adminAuthRoute.get('/', getStaticPageList);
   adminAuthRoute.get('/:id', getStaticPageDetails);
   adminAuthRoute.delete('/:id', deleteStaticPage);
+});
+
+adminAuthRoute.group('/settings', (adminAuthRoute) => {
+  adminAuthRoute.post(
+    '/',
+    [
+      body('name').notEmpty().withMessage('name field value is required'),
+      body('email')
+        .notEmpty()
+        .withMessage('email field value is required')
+        .isEmail()
+        .withMessage('email field value should be an valid mail'),
+      body('mobile')
+        .notEmpty()
+        .withMessage('mobile field value is required')
+        .isLength({ min: 10, max: 10 })
+        .withMessage('mobile field value should be exactly 10 character'),
+      body('logo').notEmpty().withMessage('logo field value is required'),
+      body('address').notEmpty().withMessage('address field value is required'),
+      body('instagram')
+        .notEmpty()
+        .withMessage('instagram field value is required')
+        .isURL()
+        .withMessage('instagram field value should be a valid https url'),
+      body('facebook')
+        .notEmpty()
+        .withMessage('facebook field value is required')
+        .isURL()
+        .withMessage('facebook field value should be a valid https url'),
+      body('twitter')
+        .notEmpty()
+        .withMessage('twitter field value is required')
+        .isURL()
+        .withMessage('twitter field value should be a valid https url'),
+      body('youtube')
+        .notEmpty()
+        .withMessage('youtube field value is required')
+        .isURL()
+        .withMessage('youtube field value should be a valid https url'),
+    ],
+    bodyValidation,
+    insertSettings,
+  );
+
+  adminAuthRoute.get('/', getSettings);
 });
