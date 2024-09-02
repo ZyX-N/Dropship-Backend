@@ -5,6 +5,7 @@ import { body } from "express-validator";
 import { categoryList } from "../controllers/customer/categoryController.js";
 import { settingList } from "../controllers/customer/settingController.js";
 import { productDetails, productList } from "../controllers/customer/productController.js";
+import { getWishlist, productToWishlist, removeProductFromWishlist } from "../controllers/customer/wishlistController.js";
 
 export const customerRoute = Router();
 export const customerAuthRoute = Router();
@@ -34,4 +35,10 @@ customerRoute.group("/category", (customerRoute) => {
 customerRoute.group("/product", (customerRoute) => {
     customerRoute.get("/", productList);
     customerRoute.get("/:slug", productDetails);
+});
+
+customerRoute.group("/wishlist", (customerRoute) => {
+    customerRoute.get("/", getWishlist);
+    customerRoute.get("/:productId", productToWishlist);
+    customerRoute.delete("/:productId", removeProductFromWishlist);
 });
