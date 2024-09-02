@@ -4,7 +4,7 @@ import { signin, signup } from "../controllers/customer/authController.js";
 import { body } from "express-validator";
 import { categoryList } from "../controllers/customer/categoryController.js";
 import { settingList } from "../controllers/customer/settingController.js";
-import { productDetails, productList } from "../controllers/customer/productController.js";
+import { productDetails, productList, productListByCategory } from "../controllers/customer/productController.js";
 import { getWishlist, productToWishlist, removeProductFromWishlist } from "../controllers/customer/wishlistController.js";
 
 export const customerRoute = Router();
