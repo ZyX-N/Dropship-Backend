@@ -34,6 +34,7 @@ customerRoute.group("/category", (customerRoute) => {
 
 customerRoute.group("/product", (customerRoute) => {
     customerRoute.get("/", productList);
+    customerRoute.get("/by-category/:categorySlug", productListByCategory);
     customerRoute.get("/:slug", productDetails);
 });
 
