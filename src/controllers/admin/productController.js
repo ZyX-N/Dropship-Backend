@@ -168,7 +168,7 @@ export const getProductDetails = tryCatch(async (req, res) => {
               localField: 'image',
               foreignField: '_id',
               as: 'image',
-              pipeline: [{ $project: { url: { $concat: [serverPrefix, 'image/', '$filename'] }, _id: 0 } }],
+              pipeline: [{ $project: { url: { $concat: [serverPrefix, 'image/', '$filename'] }, _id: 1 } }],
             },
           },
           {
@@ -187,7 +187,7 @@ export const getProductDetails = tryCatch(async (req, res) => {
         localField: 'image',
         foreignField: '_id',
         as: 'image',
-        pipeline: [{ $project: { url: { $concat: [serverPrefix, 'image/', '$filename'] }, _id: 0 } }],
+        pipeline: [{ $project: { url: { $concat: [serverPrefix, 'image/', '$filename'] }, _id: 1 } }],
       },
     },
     {
@@ -199,7 +199,8 @@ export const getProductDetails = tryCatch(async (req, res) => {
   ];
 
   let productInfo = await pipelineProduct_s(pipeline);
-  if (productInfo) return sendResponseOk(res, 'Product details fetched successfully!', productInfo);
+  if (productInfo)
+    return sendResponseOk(res, 'Product details fetched successfully!', productInfo.length > 0 ? productInfo[0] : null);
   return sendResponseBadReq(res, 'Invalid product id!');
 });
 
