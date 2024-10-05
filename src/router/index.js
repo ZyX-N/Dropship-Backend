@@ -1,4 +1,3 @@
-import cors from "cors";
 import { Router } from "express";
 import { adminAuthRoute, adminRoute } from "./admin.js";
 import { customerAuthRoute, customerRoute } from "./customer.js";
