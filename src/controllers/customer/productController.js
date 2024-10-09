@@ -147,7 +147,7 @@ export const productDetails = tryCatch(async (req, res) => {
 
   let productInfo = await pipelineProduct_s(pipeline);
 
-  if (productInfo) return sendResponseOk(res, 'Product details fetched successfully!', productInfo);
+  if (productInfo) return sendResponseOk(res, 'Product details fetched successfully!', productInfo[0]);
   return sendResponseBadReq(res, 'Invalid product!');
 });
 
