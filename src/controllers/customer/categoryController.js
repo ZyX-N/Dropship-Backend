@@ -1,4 +1,4 @@
-import { aggregateCategory_s } from '../../service/CategoryService.js';
+import { aggregateCategory_s, detailCategory_s } from '../../service/CategoryService.js';
 import { sendResponseOk, tryCatch } from '../../helpers/helper.js';
 
 export const categoryList = tryCatch(async (req, res) => {
@@ -32,4 +32,17 @@ export const categoryList = tryCatch(async (req, res) => {
 
   let categoryList = await aggregateCategory_s(pipeline);
   return sendResponseOk(res, 'Category list fetched successfully!', categoryList);
+});
+
+export const categoryDetails = tryCatch(async (req, res) => {
+  const serverPrefix = `${req.protocol}://${req.headers.host}/`;
+  let category = await detailCategory_s({ slug: req.params.slug, isActive: true }, 'title slug image', [
+    { path: 'image' },
+  ]);
+
+  if (category && category.image) {
+    category.image = `${serverPrefix}image/${category.image.filename}`;
+  }
+
+  return sendResponseOk(res, 'Category details fetched successfully!', category);
 });

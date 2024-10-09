@@ -152,7 +152,6 @@ export const productDetails = tryCatch(async (req, res) => {
 });
 
 export const productListByCategory = tryCatch(async (req, res) => {
-
   const page = Number(req.query?.page || 1);
   const count = Number(req.query?.count || 10);
   const pagination = req.query?.all === 'true' ? false : true;
@@ -161,7 +160,7 @@ export const productListByCategory = tryCatch(async (req, res) => {
 
   const { categorySlug } = req.params;
 
-  if (!(await detailCategory_s({ slug: categorySlug }))) return sendResponseBadReq(res, "Invalid categoryId provided");
+  // if (!(await detailCategory_s({ slug: categorySlug }))) return sendResponseBadReq(res, 'Invalid categoryId provided');
 
   let pipeline = [
     { $match: { isDeleted: false } },
@@ -172,7 +171,7 @@ export const productListByCategory = tryCatch(async (req, res) => {
         localField: 'category',
         as: 'category',
         pipeline: [
-          { $match: { isDeleted: false } },
+          { $match: { isDeleted: false, slug: categorySlug } },
           {
             $lookup: {
               from: 'files',
@@ -190,7 +189,7 @@ export const productListByCategory = tryCatch(async (req, res) => {
       },
     },
     {
-      $unwind: { path: '$category', preserveNullAndEmptyArrays: true },
+      $unwind: { path: '$category', preserveNullAndEmptyArrays: false },
     },
     {
       $lookup: {
@@ -203,7 +202,6 @@ export const productListByCategory = tryCatch(async (req, res) => {
     },
     {
       $match: {
-        "category.slug": categorySlug,
         $or: [
           { title: { $regex: search, $options: 'i' } },
           { hindiTitle: { $regex: search, $options: 'i' } },

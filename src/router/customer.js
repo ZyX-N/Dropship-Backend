@@ -2,7 +2,7 @@ import { Router } from "express";
 import expressGroupRoutes from 'express-group-routes';
 import { signin, signup } from "../controllers/customer/authController.js";
 import { body } from "express-validator";
-import { categoryList } from "../controllers/customer/categoryController.js";
+import { categoryDetails, categoryList } from "../controllers/customer/categoryController.js";
 import { settingList } from "../controllers/customer/settingController.js";
 import { productDetails, productList, productListByCategory } from "../controllers/customer/productController.js";
 import { getWishlist, productToWishlist, removeProductFromWishlist } from "../controllers/customer/wishlistController.js";
@@ -30,6 +30,7 @@ customerRoute.group("/settings", (customerRoute) => {
 
 customerRoute.group("/category", (customerRoute) => {
     customerRoute.get("/", categoryList);
+    customerRoute.get("/:slug", categoryDetails);
 });
 
 customerRoute.group("/product", (customerRoute) => {
