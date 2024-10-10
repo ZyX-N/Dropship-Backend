@@ -15,7 +15,7 @@ import {
 } from '../../config/config.js';
 // import { imageValiation } from '../validators/imageValidator.js';
 // import { writeFile } from 'fs/promises';
-import httpStatusCodes from "../../utils/statusCodes.js";
+import httpStatusCodes from '../../utils/statusCodes.js';
 import { detailUser_s } from '../service/UserService.js';
 
 // ******************* Variable Path Name Start *******************
@@ -34,9 +34,8 @@ export const tryCatch = (fn) => {
       console.log(error);
       return sendErrorResponse(res);
     }
-  }
-
-}
+  };
+};
 
 export const sendResponseWithData = (res, statusCode, status, msg, data, length = false) => {
   if (length) {
@@ -65,7 +64,7 @@ export const sendResponseWithoutData = (res, statusCode, status, msg) => {
 export const sendResponseBadReq = (res, msg) => {
   return res.status(httpStatusCodes.BAD_REQUEST).json({
     status: false,
-    msg: msg ?? ""
+    msg: msg ?? '',
   });
 };
 
@@ -73,13 +72,13 @@ export const sendResponseOk = (res, msg, data) => {
   if (data) {
     return res.status(httpStatusCodes.OK).json({
       status: true,
-      msg: msg ?? "",
-      data: data || null
+      msg: msg ?? '',
+      data: data || null,
     });
   }
   return res.status(httpStatusCodes.OK).json({
     status: true,
-    msg: msg ?? ""
+    msg: msg ?? '',
   });
 };
 
@@ -87,18 +86,20 @@ export const sendResponseCreated = (res, msg, data) => {
   if (data) {
     return res.status(httpStatusCodes.CREATED).json({
       status: true,
-      msg: msg ?? "",
-      data: data || null
+      msg: msg ?? '',
+      data: data || null,
     });
   }
   return res.status(httpStatusCodes.CREATED).json({
     status: true,
-    msg: msg ?? ""
+    msg: msg ?? '',
   });
 };
 
 export const sendErrorResponse = (res) => {
-  return res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send({ status: false, msg: 'Server down, try again in sometime or report the issue!' });
+  return res
+    .status(httpStatusCodes.INTERNAL_SERVER_ERROR)
+    .send({ status: false, msg: 'Server down, try again in sometime or report the issue!' });
 };
 
 export const getJwtToken = (data) => {
@@ -130,7 +131,7 @@ export const authValues = async (token) => {
     console.log(error);
     return null;
   }
-}
+};
 
 export const hashPassword = async (password) => bcrypt.hash(password, 10);
 
@@ -216,6 +217,14 @@ export const getPercentageToNumber = (number = null, percent = null) => {
     return null;
   }
 };
+
+export const generateUUID = () => {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
 
 // export const makeValidImageUrl = async (id) => {
 //   if (!id) {

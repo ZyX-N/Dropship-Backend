@@ -6,6 +6,7 @@ import {
   sendResponseWithoutData,
   removeSpace,
   makeObjectId,
+  generateUUID,
 } from '../../helpers/helper.js';
 import { isValidObjectId } from 'mongoose';
 import httpStatusCodes from '../../../utils/statusCodes.js';
@@ -26,7 +27,7 @@ export const createProduct = tryCatch(async (req, res) => {
   if (await detailProduct_s({ title: title }))
     return sendResponseBadReq(res, 'Product with this title already exists!');
 
-  const slug = `${removeSpace(title, '-')}-${categoryInfo.title}-${Date.now()}`.toLowerCase();
+  const slug = `${removeSpace(title, '-')}-${categoryInfo.title}-${generateUUID()}`.toLowerCase();
 
   let newData = {
     title,
@@ -215,7 +216,7 @@ export const editProduct = tryCatch(async (req, res) => {
   if (await detailProduct_s({ title: title, _id: { $ne: req.params.id } }))
     return sendResponseBadReq(res, 'Product with this title already exists!');
 
-  const slug = `${removeSpace(title, '-')}-${categoryInfo.title}-${Date.now()}`.toLowerCase();
+  const slug = `${removeSpace(title, '-')}-${categoryInfo.title}-${generateUUID()}`.toLowerCase();
 
   let newData = {
     title,
