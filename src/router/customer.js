@@ -39,8 +39,8 @@ customerRoute.group("/product", (customerRoute) => {
     customerRoute.get("/:slug", productDetails);
 });
 
-customerRoute.group("/wishlist", (customerRoute) => {
-    customerRoute.get("/", getWishlist);
-    customerRoute.get("/:productId", productToWishlist);
-    customerRoute.delete("/:productId", removeProductFromWishlist);
+customerAuthRoute.group("/wishlist", (customerAuthRoute) => {
+    customerAuthRoute.get("/", getWishlist);
+    customerAuthRoute.get("/:productId", productToWishlist);
+    customerAuthRoute.delete("/:productId", removeProductFromWishlist);
 });
