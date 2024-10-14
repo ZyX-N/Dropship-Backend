@@ -1,9 +1,7 @@
-import { sendResponseOk, sendResponseBadReq, tryCatch, makeObjectId } from '../../helpers/helper.js';
+import { sendResponseOk, sendResponseBadReq, tryCatch } from '../../helpers/helper.js';
 import httpStatusCodes from '../../../utils/statusCodes.js';
 import { pipelineProduct_s } from '../../service/ProductService.js';
-import { isValidObjectId } from 'mongoose';
-import { detailCategory_s } from '../../service/CategoryService.js';
-import { detailWishlist_s } from '../../service/WishlistService.js';
+import { detailCart_s } from '../../service/CartService.js';
 
 export const productList = tryCatch(async (req, res) => {
   const page = Number(req.query?.page || 1);
@@ -150,9 +148,9 @@ export const productDetails = tryCatch(async (req, res) => {
   let productInfo = await pipelineProduct_s(pipeline);
 
   if (productInfo.length > 0) {
-    productInfo[0].inWishlist = false;
-    if (await detailWishlist_s({ user: user?._id, product: productInfo[0]?._id })) {
-      productInfo[0].inWishlist = true;
+    productInfo[0].inCart = false;
+    if (await detailCart_s({ user: user?._id, product: productInfo[0]?._id })) {
+      productInfo[0].inCart = true;
     }
   }
 
@@ -161,6 +159,7 @@ export const productDetails = tryCatch(async (req, res) => {
 });
 
 export const productListByCategory = tryCatch(async (req, res) => {
+  let user = req?.apiUser;
   const page = Number(req.query?.page || 1);
   const count = Number(req.query?.count || 10);
   const pagination = req.query?.all === 'true' ? false : true;
@@ -241,6 +240,17 @@ export const productListByCategory = tryCatch(async (req, res) => {
   }
 
   let productList = await pipelineProduct_s(pipeline);
+
+  productList = await Promise.all(
+    productList.map(async (item) => {
+      let inCart = false;
+      if (await detailCart_s({ user: user?._id, product: item.product?._id })) {
+        inCart = true;
+      }
+      item.inCart = inCart;
+      return item;
+    }),
+  );
 
   return res.status(httpStatusCodes.OK).json({
     status: true,

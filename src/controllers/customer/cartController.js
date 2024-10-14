@@ -1,17 +1,17 @@
 import { sendResponseOk, sendResponseBadReq, tryCatch } from '../../helpers/helper.js';
 import { detailProduct_s } from '../../service/ProductService.js';
 import { isValidObjectId } from 'mongoose';
-import { deleteWishlist_s, detailWishlist_s, insertWishlist_s, listWishlist_s } from '../../service/WishlistService.js';
+import { deleteCart_s, detailCart_s, insertCart_s, listCart_s, updateCart_s } from '../../service/CartService.js';
 
-export const getWishlist = tryCatch(async (req, res) => {
+export const getCart = tryCatch(async (req, res) => {
   let user = req.apiUser;
   const serverPrefix = `${req.protocol}://${req.headers.host}/image/`;
 
-  let list = await listWishlist_s(
+  let list = await listCart_s(
     {
       user: user._id,
     },
-    'product createdAt',
+    'product createdAt quantity',
     [
       {
         path: 'product',
@@ -41,44 +41,40 @@ export const getWishlist = tryCatch(async (req, res) => {
     });
   }
 
-  return sendResponseOk(res, 'Wishlist fetched successfully!', list);
+  return sendResponseOk(res, 'Cart fetched successfully!', list);
 });
 
-export const productToWishlist = tryCatch(async (req, res) => {
+export const productToCart = tryCatch(async (req, res) => {
   let user = req.apiUser;
-  let { productId } = req.params;
+  let { product, quantity } = req.body;
 
-  if (!isValidObjectId(productId) || !(await detailProduct_s({ _id: productId }))) {
+  if (!isValidObjectId(product) || !(await detailProduct_s({ _id: product }))) {
     return sendResponseBadReq(res, 'Invalid product!');
   }
 
   if (
-    !(await detailWishlist_s({
+    !(await detailCart_s({
       user: user._id,
-      product: productId,
+      product,
     }))
   ) {
-    await insertWishlist_s({
+    await insertCart_s({
       user: user._id,
-      product: productId,
+      product,
+      quantity,
     });
+  } else {
+    if (quantity > 0) {
+      await updateCart_s(
+        { user: user._id, product },
+        {
+          quantity,
+        },
+      );
+    } else {
+      await deleteCart_s({ user: user._id, product });
+    }
   }
 
-  return sendResponseOk(res, 'Product added to wishlist');
-});
-
-export const removeProductFromWishlist = tryCatch(async (req, res) => {
-  let user = req.apiUser;
-  let { productId } = req.params;
-
-  if (!isValidObjectId(productId) || !(await detailProduct_s({ _id: productId }))) {
-    return sendResponseBadReq(res, 'Invalid product!');
-  }
-
-  await deleteWishlist_s({
-    user: user._id,
-    product: productId,
-  });
-
-  return sendResponseOk(res, 'Product removed from wishlist successfully!');
+  return sendResponseOk(res, 'Product update to cart');
 });
