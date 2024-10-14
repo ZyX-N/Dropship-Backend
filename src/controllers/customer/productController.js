@@ -3,6 +3,7 @@ import httpStatusCodes from '../../../utils/statusCodes.js';
 import { pipelineProduct_s } from '../../service/ProductService.js';
 import { isValidObjectId } from 'mongoose';
 import { detailCategory_s } from '../../service/CategoryService.js';
+import { detailWishlist_s } from '../../service/WishlistService.js';
 
 export const productList = tryCatch(async (req, res) => {
   const page = Number(req.query?.page || 1);
@@ -92,6 +93,7 @@ export const productList = tryCatch(async (req, res) => {
 });
 
 export const productDetails = tryCatch(async (req, res) => {
+  let user = req.apiUser;
   const serverPrefix = `${req.protocol}://${req.headers.host}/`;
 
   let pipeline = [
@@ -146,6 +148,13 @@ export const productDetails = tryCatch(async (req, res) => {
   ];
 
   let productInfo = await pipelineProduct_s(pipeline);
+
+  if (productInfo.length > 0) {
+    productInfo[0].inWishlist = false;
+    if (await detailWishlist_s({ user: user?._id, product: productInfo[0]?._id })) {
+      productInfo[0].inWishlist = true;
+    }
+  }
 
   if (productInfo) return sendResponseOk(res, 'Product details fetched successfully!', productInfo[0]);
   return sendResponseBadReq(res, 'Invalid product!');

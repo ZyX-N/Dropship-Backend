@@ -5,7 +5,7 @@ import { deleteWishlist_s, detailWishlist_s, insertWishlist_s, listWishlist_s } 
 
 export const getWishlist = tryCatch(async (req, res) => {
   let user = req.apiUser;
-  const serverPrefix = `${req.protocol}://${req.headers.host}/`;
+  const serverPrefix = `${req.protocol}://${req.headers.host}/image/`;
 
   let list = await listWishlist_s(
     {
@@ -19,9 +19,8 @@ export const getWishlist = tryCatch(async (req, res) => {
         populate: [
           {
             path: 'category',
-            select: 'title image',
+            select: 'title',
             match: { isDeleted: false, isActive: true },
-            populate: [{ path: 'image', select: 'filename' }],
           },
           { path: 'image', select: 'filename' },
         ],
@@ -29,6 +28,18 @@ export const getWishlist = tryCatch(async (req, res) => {
       },
     ],
   );
+
+  if (list.length > 0) {
+    list = list?.map((item) => {
+      if (item?.product && item?.product?.image.length > 0) {
+        for (let img of item.product.image) {
+          let tempImg = `${serverPrefix}${img.filename}`;
+          img.url = tempImg;
+        }
+      }
+      return item;
+    });
+  }
 
   return sendResponseOk(res, 'Wishlist fetched successfully!', list);
 });
