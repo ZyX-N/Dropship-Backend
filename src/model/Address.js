@@ -8,6 +8,7 @@ const addressSchema = Schema(
     area: { type: String, default: '' },
     street: { type: String, default: '' },
     pincode: { type: Schema.Types.ObjectId, index: true, ref: 'pincode' },
+    isDeleted: { type: Boolean, index: true, default: false }
   },
   {
     timestamps: true,

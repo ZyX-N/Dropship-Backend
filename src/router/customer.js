@@ -7,6 +7,7 @@ import { categoryDetails, categoryList } from '../controllers/customer/categoryC
 import { settingList } from '../controllers/customer/settingController.js';
 import { productDetails, productList, productListByCategory } from '../controllers/customer/productController.js';
 import { getCart, productToCart } from '../controllers/customer/cartController.js';
+import { cityByStateList, createAddress, deleteAddress, detailsAddress, listAddress, pincodeByCityList, stateList, updateAddress } from '../controllers/customer/addressController.js';
 
 export const customerRoute = Router();
 export const customerAuthRoute = Router();
@@ -24,6 +25,7 @@ customerRoute.group('/auth', (customerRoute) => {
         .withMessage('mobile field value should be exact 10 characters'),
       body('password').notEmpty().withMessage('password field value is empty'),
     ],
+    bodyValidation,
     signup,
   );
 
@@ -33,6 +35,7 @@ customerRoute.group('/auth', (customerRoute) => {
       body('username').notEmpty().withMessage('username field value is mandatory'),
       body('password').notEmpty().withMessage('password field value is mandatory'),
     ],
+    bodyValidation,
     signin,
   );
 });
@@ -50,6 +53,38 @@ customerRoute.group('/product', (customerRoute) => {
   customerRoute.get('/', productList);
   customerRoute.get('/by-category/:categorySlug', productListByCategory);
   customerRoute.get('/:slug', productDetails);
+});
+
+customerRoute.group('/location', (customerRoute) => {
+  customerRoute.get('/state', stateList);
+  customerRoute.get('/city-by-state/:stateId', cityByStateList);
+  customerRoute.get('/pincode-by-city/:cityId', pincodeByCityList);
+});
+
+customerAuthRoute.group('/address', (customerAuthRoute) => {
+  customerAuthRoute.post(
+    '/',
+    [
+      body('state').notEmpty().withMessage('state field value is mandatory'),
+      body('city').notEmpty().withMessage('city field value is mandatory'),
+      body('pincode').notEmpty().withMessage('pincode field value is mandatory'),
+      body('area').optional(),
+      body('street').optional()
+    ],
+    bodyValidation, createAddress,
+  );
+
+  customerAuthRoute.get('/', listAddress);
+  customerAuthRoute.get('/:id', detailsAddress);
+  customerAuthRoute.delete('/:id', deleteAddress);
+  customerAuthRoute.put('/:id', [
+    body('state').notEmpty().withMessage('state field value is mandatory'),
+    body('city').notEmpty().withMessage('city field value is mandatory'),
+    body('pincode').notEmpty().withMessage('pincode field value is mandatory'),
+    body('area').optional(),
+    body('street').optional()
+  ],
+    bodyValidation, updateAddress);
 });
 
 customerAuthRoute.group('/cart', (customerAuthRoute) => {
