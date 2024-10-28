@@ -6,7 +6,7 @@ import httpStatusCodes from "../../../utils/statusCodes.js";
 export const createState = tryCatch(async (req, res) => {
     let { name } = req.body;
     let newData = {
-        title
+        name
     }
 
     if (await detailState_s({ name })) return sendResponseBadReq(res, "Name already exists!")
