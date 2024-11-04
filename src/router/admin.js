@@ -27,9 +27,21 @@ import {
   deleteStaticPage,
 } from '../controllers/admin/staticPageController.js';
 import { getSettings, insertSettings } from '../controllers/admin/settingController.js';
-import { createState, deleteState, editState, getStateDetails, getStateList } from '../controllers/admin/stateController.js';
-import { createCity, deleteCity, editCity, getCityDetails, getCityList } from '../controllers/admin/cityController.js';
-import { createPincode, deletePincode, editPincode, getPincodeDetails, getPincodeList } from '../controllers/admin/pincodeController.js';
+import {
+  createState,
+  deleteState,
+  editState,
+  getStateDetails,
+  getStateList,
+} from '../controllers/admin/stateController.js';
+import { createCity, deleteCity, editCity, getCityDetails, getCityList, getCityListByState } from '../controllers/admin/cityController.js';
+import {
+  createPincode,
+  deletePincode,
+  editPincode,
+  getPincodeDetails,
+  getPincodeList,
+} from '../controllers/admin/pincodeController.js';
 
 export const adminRoute = Router();
 export const adminAuthRoute = Router();
@@ -246,18 +258,14 @@ adminAuthRoute.group('/settings', (adminAuthRoute) => {
 adminAuthRoute.group('/state', (adminAuthRoute) => {
   adminAuthRoute.post(
     '/',
-    [
-      body('name').notEmpty().withMessage('name field value is mandatory')
-    ],
+    [body('name').notEmpty().withMessage('name field value is mandatory')],
     bodyValidation,
     createState,
   );
 
   adminAuthRoute.put(
     '/:id',
-    [
-      body('name').notEmpty().withMessage('name field value is mandatory')
-    ],
+    [body('name').notEmpty().withMessage('name field value is mandatory')],
     bodyValidation,
     editState,
   );
@@ -289,6 +297,7 @@ adminAuthRoute.group('/city', (adminAuthRoute) => {
   );
 
   adminAuthRoute.get('/', getCityList);
+  adminAuthRoute.get('/by-state/:id', getCityListByState);
   adminAuthRoute.get('/:id', getCityDetails);
   adminAuthRoute.delete('/:id', deleteCity);
 });
@@ -302,7 +311,7 @@ adminAuthRoute.group('/pincode', (adminAuthRoute) => {
       body('state').isMongoId().withMessage('Valid state ID is mandatory'),
     ],
     bodyValidation,
-    createPincode
+    createPincode,
   );
 
   adminAuthRoute.put(
@@ -313,7 +322,7 @@ adminAuthRoute.group('/pincode', (adminAuthRoute) => {
       body('state').isMongoId().withMessage('Valid state ID is mandatory'),
     ],
     bodyValidation,
-    editPincode
+    editPincode,
   );
 
   adminAuthRoute.get('/', getPincodeList);

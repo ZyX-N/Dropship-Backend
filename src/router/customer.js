@@ -7,7 +7,17 @@ import { categoryDetails, categoryList } from '../controllers/customer/categoryC
 import { settingList } from '../controllers/customer/settingController.js';
 import { productDetails, productList, productListByCategory } from '../controllers/customer/productController.js';
 import { getCart, productToCart } from '../controllers/customer/cartController.js';
-import { cityByStateList, createAddress, deleteAddress, detailsAddress, listAddress, pincodeByCityList, stateList, updateAddress } from '../controllers/customer/addressController.js';
+import {
+  cityByStateList,
+  createAddress,
+  deleteAddress,
+  detailsAddress,
+  listAddress,
+  pincodeByCityList,
+  pincodeSearch,
+  stateList,
+  updateAddress,
+} from '../controllers/customer/addressController.js';
 import { orderPlace } from '../controllers/customer/orderController.js';
 
 export const customerRoute = Router();
@@ -60,6 +70,7 @@ customerRoute.group('/location', (customerRoute) => {
   customerRoute.get('/state', stateList);
   customerRoute.get('/city-by-state/:stateId', cityByStateList);
   customerRoute.get('/pincode-by-city/:cityId', pincodeByCityList);
+  customerRoute.post('/available-pincode', [body('pincode').optional()], bodyValidation, pincodeSearch);
 });
 
 customerAuthRoute.group('/address', (customerAuthRoute) => {
@@ -70,22 +81,27 @@ customerAuthRoute.group('/address', (customerAuthRoute) => {
       body('city').notEmpty().withMessage('city field value is mandatory'),
       body('pincode').notEmpty().withMessage('pincode field value is mandatory'),
       body('area').optional(),
-      body('street').optional()
+      body('street').optional(),
     ],
-    bodyValidation, createAddress,
+    bodyValidation,
+    createAddress,
   );
 
   customerAuthRoute.get('/', listAddress);
   customerAuthRoute.get('/:id', detailsAddress);
   customerAuthRoute.delete('/:id', deleteAddress);
-  customerAuthRoute.put('/:id', [
-    body('state').notEmpty().withMessage('state field value is mandatory'),
-    body('city').notEmpty().withMessage('city field value is mandatory'),
-    body('pincode').notEmpty().withMessage('pincode field value is mandatory'),
-    body('area').optional(),
-    body('street').optional()
-  ],
-    bodyValidation, updateAddress);
+  customerAuthRoute.put(
+    '/:id',
+    [
+      body('state').notEmpty().withMessage('state field value is mandatory'),
+      body('city').notEmpty().withMessage('city field value is mandatory'),
+      body('pincode').notEmpty().withMessage('pincode field value is mandatory'),
+      body('area').optional(),
+      body('street').optional(),
+    ],
+    bodyValidation,
+    updateAddress,
+  );
 });
 
 customerAuthRoute.group('/cart', (customerAuthRoute) => {
@@ -109,7 +125,11 @@ customerAuthRoute.group('/order', (customerAuthRoute) => {
   customerAuthRoute.post(
     '/place',
     [
-      body('type').notEmpty().withMessage('type field value is mandatory').isIn(["product","cart"]).withMessage("Invalid value in type"),
+      body('type')
+        .notEmpty()
+        .withMessage('type field value is mandatory')
+        .isIn(['product', 'cart'])
+        .withMessage('Invalid value in type'),
       body('product').optional(),
       body('quantity').optional().isInt({ min: 1, max: 50 }).withMessage('quantity should be minimum 1 or maximum 50'),
     ],
