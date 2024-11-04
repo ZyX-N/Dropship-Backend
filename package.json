@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "nodemon ./index.js",
     "start": "node ./index.js",
+    "start:prod": "node ./cluster.js",
     "prettier": "prettier --write .",
     "seeder": "node ./seed/index.js"
   },
