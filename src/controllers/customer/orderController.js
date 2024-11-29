@@ -28,7 +28,6 @@ export const orderPlace = tryCatch(async (req, res) => {
     }
 
     const amount = productInfo.price * quantity;
-
     const options = {
       amount: amount * 100,
       currency: 'INR',
@@ -40,7 +39,6 @@ export const orderPlace = tryCatch(async (req, res) => {
     };
 
     let orderDetails = await instance.orders.create(options);
-
     if (orderDetails && 'error' in orderDetails) {
       return sendResponseBadReq(res, orderDetails.error?.description);
     }
@@ -78,10 +76,9 @@ export const orderPlace = tryCatch(async (req, res) => {
       // transactionDbId
     };
 
-    await insertOrder_s(orderInfo);
+    let orderData = await insertOrder_s(orderInfo);
     await updateProduct_s({ _id: product }, { stock: productInfo.stock - quantity });
-
-    return sendResponseOk(res, 'Order placed successfully!', orderDetails);
+    return sendResponseOk(res, 'Order placed successfully!', orderData);
   } else if (type === 'cart') {
     let cartItems = await listCart_s(
       {
