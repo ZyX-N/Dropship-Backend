@@ -35,16 +35,24 @@ export const pincodeSearch = tryCatch(async (req, res) => {
 });
 
 export const createAddress = tryCatch(async (req, res) => {
-  let { state, city, pincode, area, street } = req.body;
+  let { name, contact, pincode, area, house } = req.body;
 
-  if (!state || !isValidObjectId(state) || !(await detailState_s({ _id: state })))
-    return sendResponseBadReq(res, 'Invalid state!');
-  if (!city || !isValidObjectId(city) || !(await detailCity_s({ _id: city, state })))
-    return sendResponseBadReq(res, 'Invalid city!');
-  if (!pincode || !isValidObjectId(pincode) || !(await detailPincode_s({ _id: pincode, city, state })))
-    return sendResponseBadReq(res, 'Invalid pincode!');
+  if (!pincode || !isValidObjectId(pincode)) return sendResponseBadReq(res, 'Invalid pincode!');
 
-  await insertAddress_s({ user: req.apiUser._id, state, city, pincode, area: area || '', street: street || '' });
+  let pincodeInfo = await detailPincode_s({ _id: pincode });
+
+  if (!pincodeInfo) return sendResponseBadReq(res, 'Invalid pincode!');
+
+  await insertAddress_s({
+    user: req.apiUser._id,
+    name,
+    contact,
+    state: pincodeInfo.state._id,
+    city: pincodeInfo.city._id,
+    pincode,
+    house: house || '',
+    area: area || '',
+  });
 
   return sendResponseCreated(res, 'Address added successfully!');
 });
@@ -80,27 +88,27 @@ export const deleteAddress = tryCatch(async (req, res) => {
   return sendResponseOk(res, 'Address deleted successfully!');
 });
 
-export const updateAddress = tryCatch(async (req, res) => {
-  let { state, city, pincode, area, street } = req.body;
+// export const updateAddress = tryCatch(async (req, res) => {
+//   let { state, city, pincode, area, street } = req.body;
 
-  if (!req.params.id || !isValidObjectId(req.params.id)) return sendResponseBadReq(res, 'Invalid id!');
-  if (!state || !isValidObjectId(state) || !(await detailState_s({ _id: state })))
-    return sendResponseBadReq(res, 'Invalid state!');
-  if (!city || !isValidObjectId(city) || !(await detailCity_s({ _id: city, state })))
-    return sendResponseBadReq(res, 'Invalid city!');
-  if (!pincode || !isValidObjectId(pincode) || !(await detailPincode_s({ _id: pincode, city, state })))
-    return sendResponseBadReq(res, 'Invalid pincode!');
+//   if (!req.params.id || !isValidObjectId(req.params.id)) return sendResponseBadReq(res, 'Invalid id!');
+//   if (!state || !isValidObjectId(state) || !(await detailState_s({ _id: state })))
+//     return sendResponseBadReq(res, 'Invalid state!');
+//   if (!city || !isValidObjectId(city) || !(await detailCity_s({ _id: city, state })))
+//     return sendResponseBadReq(res, 'Invalid city!');
+//   if (!pincode || !isValidObjectId(pincode) || !(await detailPincode_s({ _id: pincode, city, state })))
+//     return sendResponseBadReq(res, 'Invalid pincode!');
 
-  let newData = {
-    state,
-    city,
-    pincode,
-    updatedAt: Date.now(),
-  };
+//   let newData = {
+//     state,
+//     city,
+//     pincode,
+//     updatedAt: Date.now(),
+//   };
 
-  if (area) newData.area = area;
-  if (street) newData.street = street;
+//   if (area) newData.area = area;
+//   if (street) newData.street = street;
 
-  await updateAddress_s({ _id: req.params.id, user: req.apiUser._id }, newData);
-  return sendResponseCreated(res, 'Address updated successfully!');
-});
+//   await updateAddress_s({ _id: req.params.id, user: req.apiUser._id }, newData);
+//   return sendResponseCreated(res, 'Address updated successfully!');
+// });

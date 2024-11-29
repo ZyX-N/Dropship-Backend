@@ -16,7 +16,7 @@ import {
   pincodeByCityList,
   pincodeSearch,
   stateList,
-  updateAddress,
+  // updateAddress,
 } from '../controllers/customer/addressController.js';
 import { orderPlace } from '../controllers/customer/orderController.js';
 
@@ -77,11 +77,15 @@ customerAuthRoute.group('/address', (customerAuthRoute) => {
   customerAuthRoute.post(
     '/',
     [
-      body('state').notEmpty().withMessage('state field value is mandatory'),
-      body('city').notEmpty().withMessage('city field value is mandatory'),
+      body('name').notEmpty().withMessage('name field value is mandatory'),
+      body('contact')
+        .notEmpty()
+        .withMessage('contact field value is mandatory')
+        .isLength({ min: 10, max: 10 })
+        .withMessage('contact number should be of 10 digits'),
       body('pincode').notEmpty().withMessage('pincode field value is mandatory'),
       body('area').optional(),
-      body('street').optional(),
+      body('house').optional(),
     ],
     bodyValidation,
     createAddress,
@@ -90,18 +94,18 @@ customerAuthRoute.group('/address', (customerAuthRoute) => {
   customerAuthRoute.get('/', listAddress);
   customerAuthRoute.get('/:id', detailsAddress);
   customerAuthRoute.delete('/:id', deleteAddress);
-  customerAuthRoute.put(
-    '/:id',
-    [
-      body('state').notEmpty().withMessage('state field value is mandatory'),
-      body('city').notEmpty().withMessage('city field value is mandatory'),
-      body('pincode').notEmpty().withMessage('pincode field value is mandatory'),
-      body('area').optional(),
-      body('street').optional(),
-    ],
-    bodyValidation,
-    updateAddress,
-  );
+  // customerAuthRoute.put(
+  //   '/:id',
+  //   [
+  //     body('state').notEmpty().withMessage('state field value is mandatory'),
+  //     body('city').notEmpty().withMessage('city field value is mandatory'),
+  //     body('pincode').notEmpty().withMessage('pincode field value is mandatory'),
+  //     body('area').optional(),
+  //     body('street').optional(),
+  //   ],
+  //   bodyValidation,
+  //   updateAddress,
+  // );
 });
 
 customerAuthRoute.group('/cart', (customerAuthRoute) => {
@@ -132,6 +136,7 @@ customerAuthRoute.group('/order', (customerAuthRoute) => {
         .withMessage('Invalid value in type'),
       body('product').optional(),
       body('quantity').optional().isInt({ min: 1, max: 50 }).withMessage('quantity should be minimum 1 or maximum 50'),
+      body('address').notEmpty().withMessage('address field value is mandatory'),
     ],
     bodyValidation,
     orderPlace,
