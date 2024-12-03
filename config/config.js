@@ -54,4 +54,4 @@ export const RAZORPAY_KEY_ID = process.env.hasOwnProperty('RAZORPAY_KEY_ID') ? p
 
 export const RAZORPAY_KEY_SECRET = process.env.hasOwnProperty('RAZORPAY_KEY_SECRET')
   ? process.env.RAZORPAY_KEY_SECRET
-  : null;
+  : "TotIrflmqrN98I8AVTcS38Yq";

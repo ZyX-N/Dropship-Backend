@@ -18,7 +18,8 @@ import {
   stateList,
   // updateAddress,
 } from '../controllers/customer/addressController.js';
-import { orderPlace } from '../controllers/customer/orderController.js';
+import { orderDetails, orderList, orderPlace } from '../controllers/customer/orderController.js';
+import { verifyPayment } from '../controllers/customer/paymentController.js';
 
 export const customerRoute = Router();
 export const customerAuthRoute = Router();
@@ -140,5 +141,39 @@ customerAuthRoute.group('/order', (customerAuthRoute) => {
     ],
     bodyValidation,
     orderPlace,
+  );
+
+  customerAuthRoute.post(
+    '/list',
+    [
+      body('all')
+        .notEmpty()
+        .withMessage('all field value is mandatory')
+        .isBoolean()
+        .withMessage('all field should be a boolean'),
+      body('page').optional().isInt({ min: 1 }).withMessage('page should be minimum 1'),
+      body('count').optional().isInt({ min: 1 }).withMessage('count should be minimum 1'),
+    ],
+    bodyValidation,
+    orderList,
+  );
+
+  customerAuthRoute.get('/:id', orderDetails);
+});
+
+customerAuthRoute.group('/payment', (customerAuthRoute) => {
+  customerAuthRoute.post(
+    '/verify',
+    [
+      body('payment_id').notEmpty().withMessage('payment_id field value is mandatory'),
+      body('order_id').notEmpty().withMessage('order_id field value is mandatory'),
+      body('status')
+        .notEmpty()
+        .withMessage('status field value is mandatory')
+        .isBoolean()
+        .withMessage('status field should be a boolean'),
+    ],
+    bodyValidation,
+    verifyPayment,
   );
 });
