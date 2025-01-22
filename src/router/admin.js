@@ -34,7 +34,14 @@ import {
   getStateDetails,
   getStateList,
 } from '../controllers/admin/stateController.js';
-import { createCity, deleteCity, editCity, getCityDetails, getCityList, getCityListByState } from '../controllers/admin/cityController.js';
+import {
+  createCity,
+  deleteCity,
+  editCity,
+  getCityDetails,
+  getCityList,
+  getCityListByState,
+} from '../controllers/admin/cityController.js';
 import {
   createPincode,
   deletePincode,
@@ -42,6 +49,7 @@ import {
   getPincodeDetails,
   getPincodeList,
 } from '../controllers/admin/pincodeController.js';
+import { orderList } from '../controllers/admin/orderController.js';
 
 export const adminRoute = Router();
 export const adminAuthRoute = Router();
@@ -328,4 +336,17 @@ adminAuthRoute.group('/pincode', (adminAuthRoute) => {
   adminAuthRoute.get('/', getPincodeList);
   adminAuthRoute.get('/:id', getPincodeDetails);
   adminAuthRoute.delete('/:id', deletePincode);
+});
+
+adminAuthRoute.group('/order', (adminAuthRoute) => {
+  adminAuthRoute.post(
+    '/list',
+    [
+      body('page').optional().isInt({ min: 1 }).withMessage('page value should be a positive integer'),
+      body('count').optional().isInt({ min: 1 }).withMessage('count value should be a positive integer'),
+      body('search').optional(),
+    ],
+    bodyValidation,
+    orderList,
+  );
 });

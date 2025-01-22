@@ -6,7 +6,7 @@ const orderProductSchema = Schema({
   description: { type: String },
   status: {
     type: String,
-    enum: ['pending', 'confirmed', 'cancelled', 'delivered', 'processed', 'dispatched'],
+    enum: ['pending', 'confirmed', 'cancelled', 'delivered'],
     default: 'pending',
     require: true,
   },

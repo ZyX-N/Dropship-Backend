@@ -143,7 +143,7 @@ export const orderList = tryCatch(async (req, res) => {
     {
       userId: user._id,
     },
-    'orderId paymentMethod paymentStatus shippingMethod isOrderCancelAble totalMrp totalPrice invoiceNo shippingCost totalAmountToPay createdAt productDetails.title productDetails.image',
+    'orderId orderFrom paymentMethod paymentStatus shippingMethod isOrderCancelAble totalMrp totalPrice invoiceNo shippingCost totalAmountToPay createdAt productDetails.title productDetails.image productDetails.status',
     [],
     !all,
     page,
