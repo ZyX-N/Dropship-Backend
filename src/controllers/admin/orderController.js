@@ -1,5 +1,5 @@
 import Razorpay from 'razorpay';
-import { sendResponseOk, sendResponseBadReq, tryCatch } from '../../helpers/helper.js';
+import { sendResponseOk, sendResponseBadReq, tryCatch, makeObjectId } from '../../helpers/helper.js';
 import { listCart_s } from '../../service/CartService.js';
 import { detailProduct_s, updateProduct_s } from '../../service/ProductService.js';
 import { isValidObjectId } from 'mongoose';
@@ -20,7 +20,7 @@ export const orderList = tryCatch(async (req, res) => {
 
   const page = Number(req.body?.page || 1);
   const count = Number(req.body?.count || 20);
-  const search = Number(req.body?.search || "");
+  const search = Number(req.body?.search || '');
 
   let pipeline = [
     {
@@ -109,6 +109,119 @@ export const orderList = tryCatch(async (req, res) => {
     msg: 'Order list fetched successfully!',
     data: data,
     // totalCount: totalCount,
+  });
+});
+
+export const orderDetail = tryCatch(async (req, res) => {
+  let user = req.apiUser;
+  let { id } = req.params;
+  const serverPrefix = `${req.protocol}://${req.headers.host}/`;
+
+  let pipeline = [
+    {
+      $match: { _id: makeObjectId(id) },
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'userId',
+        foreignField: '_id',
+        as: 'userInfo',
+        pipeline: [
+          {
+            $match: { isDeleted: false },
+          },
+          {
+            $project: {
+              name: 1,
+              email: 1,
+              mobile: 1,
+              isVerified: 1,
+            },
+          },
+        ],
+      },
+    },
+    {
+      $unwind: { preserveNullAndEmptyArrays: false, path: '$userInfo' },
+    },
+
+    {
+      $lookup: {
+        from: 'files',
+        localField: 'productDetails.image',
+        foreignField: '_id',
+        as: 'userInfo',
+        pipeline: [
+          {
+            $project: {
+              path: { $concat: [serverPrefix, 'image/', '$filename'] },
+            },
+          },
+        ],
+      },
+    },
+
+    {
+      $project: {
+        orderId: 1,
+        userInfo: 1,
+        orderFrom: 1,
+        paymentMethod: 1,
+        paymentStatus: 1,
+        shippingMethod: 1,
+        isOrderCancelAble: 1,
+        totalMrp: 1,
+        totalPrice: 1,
+        totalAmountToPay: 1,
+        orderId: 1,
+        transactionDbId: 1,
+        updatedAt: 1,
+        'productDetails.title': 1,
+        'productDetails.description': 1,
+        'productDetails.status': 1,
+        'productDetails.price': 1,
+        'productDetails.strikePrice': 1,
+        'productDetails.amountToPay': 1,
+        'productDetails.quantity': 1,
+        'productDetails.category': 1,
+        'productDetails.image': 1,
+      },
+    },
+  ];
+
+  let data = await pipelineOrder_s(pipeline);
+
+  // const serverPrefix = `${req.protocol}://${req.headers.host}/`;
+
+  // data = await Promise.all(
+  //   data.map(async (item) => {
+  //     item.productDetails = await Promise.all(
+  //       item.productDetails.map(async (prod) => {
+  //         let imgs = [];
+  //         for (let img of prod.image) {
+  //           let imgData = await detailFile_s({ _id: img }, 'path filename');
+  //           if (imgData) {
+  //             const imgUrl = `${serverPrefix}${imgData?.filename}`;
+  //             imgs.push(imgUrl);
+  //           }
+  //         }
+  //         prod.image = imgs;
+  //         return prod;
+  //       }),
+  //     );
+  //     return item;
+  //   }),
+  // );
+
+  // const totalCount = await countDocOrder_s({
+  //   userId: user._id,
+  // });
+
+  return res.status(httpStatusCodes.OK).json({
+    status: true,
+    msg: 'Order details fetched successfully!',
+    data: data?.length > 0 ? data[0] : null,
   });
 });
 

@@ -49,7 +49,7 @@ import {
   getPincodeDetails,
   getPincodeList,
 } from '../controllers/admin/pincodeController.js';
-import { orderList } from '../controllers/admin/orderController.js';
+import { orderDetail, orderList } from '../controllers/admin/orderController.js';
 
 export const adminRoute = Router();
 export const adminAuthRoute = Router();
@@ -349,4 +349,5 @@ adminAuthRoute.group('/order', (adminAuthRoute) => {
     bodyValidation,
     orderList,
   );
+  adminAuthRoute.get('/details/:id', orderDetail);
 });
