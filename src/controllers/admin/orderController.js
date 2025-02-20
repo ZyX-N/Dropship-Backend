@@ -145,7 +145,6 @@ export const orderDetail = tryCatch(async (req, res) => {
     {
       $unwind: { preserveNullAndEmptyArrays: false, path: '$userInfo' },
     },
-
     {
       $lookup: {
         from: 'files',
@@ -161,7 +160,66 @@ export const orderDetail = tryCatch(async (req, res) => {
         ],
       },
     },
-
+    {
+      $lookup: {
+        from: 'addresses',
+        localField: 'shippingAddressId',
+        foreignField: '_id',
+        as: 'shippingAddress',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'states',
+              localField: 'state',
+              foreignField: '_id',
+              as: 'state',
+              pipeline: [{ $project: { name: 1 } }],
+            },
+          },
+          {
+            $unwind: { preserveNullAndEmptyArrays: false, path: '$state' },
+          },
+          {
+            $lookup: {
+              from: 'cities',
+              localField: 'city',
+              foreignField: '_id',
+              as: 'city',
+              pipeline: [{ $project: { name: 1 } }],
+            },
+          },
+          {
+            $unwind: { preserveNullAndEmptyArrays: false, path: '$city' },
+          },
+          {
+            $lookup: {
+              from: 'pincodes',
+              localField: 'pincode',
+              foreignField: '_id',
+              as: 'pincode',
+              pipeline: [{ $project: { code: 1 } }],
+            },
+          },
+          {
+            $unwind: { preserveNullAndEmptyArrays: false, path: '$pincode' },
+          },
+          {
+            $project: {
+              name: 1,
+              contact: 1,
+              state: 1,
+              city: 1,
+              pincode: 1,
+              house: 1,
+              area: 1,
+            },
+          },
+        ],
+      },
+    },
+    {
+      $unwind: { preserveNullAndEmptyArrays: false, path: '$shippingAddress' },
+    },
     {
       $project: {
         orderId: 1,
@@ -170,6 +228,7 @@ export const orderDetail = tryCatch(async (req, res) => {
         paymentMethod: 1,
         paymentStatus: 1,
         shippingMethod: 1,
+        shippingAddress: 1,
         isOrderCancelAble: 1,
         totalMrp: 1,
         totalPrice: 1,
