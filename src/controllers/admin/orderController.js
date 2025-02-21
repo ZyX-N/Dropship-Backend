@@ -284,6 +284,21 @@ export const orderDetail = tryCatch(async (req, res) => {
   });
 });
 
+export const orderStatusUpdate = tryCatch(async (req, res) => {
+  let { id, status } = req.params;
+
+  let data = await updateOrder_s({ _id: id }, { 'productDetails.status': status });
+
+  if (data) {
+    await updateOrder_s({ _id: id }, { isOrderCancelAble: false });
+  }
+
+  return res.status(httpStatusCodes.OK).json({
+    status: true,
+    msg: 'Order status updated successfully!',
+  });
+});
+
 // export const orderDetails = tryCatch(async (req, res) => {
 //   let user = req.apiUser;
 //   let { id } = req.params;

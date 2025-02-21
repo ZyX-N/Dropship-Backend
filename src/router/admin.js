@@ -49,7 +49,7 @@ import {
   getPincodeDetails,
   getPincodeList,
 } from '../controllers/admin/pincodeController.js';
-import { orderDetail, orderList } from '../controllers/admin/orderController.js';
+import { orderDetail, orderList, orderStatusUpdate } from '../controllers/admin/orderController.js';
 
 export const adminRoute = Router();
 export const adminAuthRoute = Router();
@@ -350,4 +350,17 @@ adminAuthRoute.group('/order', (adminAuthRoute) => {
     orderList,
   );
   adminAuthRoute.get('/details/:id', orderDetail);
+  adminAuthRoute.post(
+    '/update',
+    [
+      body('id').notEmpty().withMessage('id value is required'),
+      body('status')
+        .notEmpty()
+        .withMessage('status value is required')
+        .isIn(['confirmed', 'cancelled', 'delivered'])
+        .withMessage("Available values are 'confirmed', 'cancelled' and 'delivered'"),
+    ],
+    bodyValidation,
+    orderStatusUpdate,
+  );
 });
